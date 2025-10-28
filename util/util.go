@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/big"
 	"net"
-	"strings"
 )
 
 const InterfaceNameTemplate = "G%09s%03s%s"
@@ -17,16 +16,15 @@ func ParseIP(ip string) (net.IP, error) {
 	return parsed, nil
 }
 
-func ParseSegments(input string) ([]net.IP, error) {
+func ParseSegments(input []string) ([]net.IP, error) {
 	var segments []net.IP
-	for _, s := range strings.Split(input, ",") {
-		s = strings.TrimSpace(s)
-		ip, err := ParseIP(s)
+	for _, ipStr := range input {
+		ip, err := ParseIP(ipStr)
 		if err != nil {
-			return nil, fmt.Errorf("could not parse ip (%s): %v", s, err)
+			return nil, fmt.Errorf("could not parse ip (%s): %v", ipStr, err)
 		}
 		if ip.To4() != nil {
-			return nil, fmt.Errorf("not an ipv6 address: %s", s)
+			return nil, fmt.Errorf("not an ipv6 address: %s", ipStr)
 		}
 		segments = append([]net.IP{ip}, segments...)
 	}
