@@ -65,3 +65,9 @@ func ExtractVPCFromSRv6Endpoint(endpoint net.IP) (string, string, error) {
 
 	return fmt.Sprintf("%012x", vpcNum), fmt.Sprintf("%04x", vpcAttachmentNum), nil
 }
+
+func IsHost(ipNet *net.IPNet) bool {
+	ones, bits := ipNet.Mask.Size()
+	// host if mask is full length: /32 for IPv4, /128 for IPv6
+	return ones == bits
+}
