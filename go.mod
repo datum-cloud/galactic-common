@@ -3,6 +3,7 @@ module github.com/datum-cloud/galactic-common
 go 1.24.9
 
 require (
+	github.com/kenshaw/baseconv v0.1.1
 	github.com/lorenzosaino/go-sysctl v0.3.1
 	github.com/vishvananda/netlink v1.3.1
 )
