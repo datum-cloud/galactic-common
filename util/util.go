@@ -1,9 +1,11 @@
 package util
 
 import (
+	"encoding/binary"
 	"fmt"
 	"math/big"
 	"net"
+	"strconv"
 )
 
 const InterfaceNameTemplate = "G%09s%03s%s"
@@ -46,7 +48,7 @@ func GenerateInterfaceNameGuest(vpc, vpcAttachment string) string {
 	return fmt.Sprintf(InterfaceNameTemplate, vpc, vpcAttachment, "G")
 }
 
-func ExtractVPCFromSRv6Endpoint(endpoint net.IP) (string, string, error) {
+func DecodeSRv6Endpoint(endpoint net.IP) (string, string, error) {
 	if endpoint.To4() != nil {
 		return "", "", fmt.Errorf("provided endpoint is not an IPv6 address: %s", endpoint)
 	}
@@ -62,6 +64,32 @@ func ExtractVPCFromSRv6Endpoint(endpoint net.IP) (string, string, error) {
 	)
 
 	return fmt.Sprintf("%012x", vpcNum), fmt.Sprintf("%04x", vpcAttachmentNum), nil
+}
+
+func EncodeSRv6Endpoint(srv6_net, vpc, vpcAttachment string) (string, error) {
+	ip, ipnet, err := net.ParseCIDR(srv6_net)
+	if err != nil {
+		return "", err
+	}
+	if ip.To4() != nil {
+		return "", fmt.Errorf("provided srv6_net is not IPv6: %s", srv6_net)
+	}
+	mask_len, _ := ipnet.Mask.Size()
+	if mask_len > 64 {
+		return "", fmt.Errorf("srv6_net must be at least 64 bits long")
+	}
+
+	vpcInt, err := strconv.ParseUint(vpc, 16, 64)
+	if err != nil {
+		return "", fmt.Errorf("invalid vpc %q: %w", vpc, err)
+	}
+	vpcAttachmentInt, err := strconv.ParseUint(vpcAttachment, 16, 16)
+	if err != nil {
+		return "", fmt.Errorf("invalid vpcAttachment %q: %w", vpcAttachment, err)
+	}
+
+	binary.BigEndian.PutUint64(ip[8:16], (vpcInt<<16)|vpcAttachmentInt)
+	return ip.String(), nil
 }
 
 func IsHost(ipNet *net.IPNet) bool {
