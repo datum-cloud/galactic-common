@@ -36,37 +36,37 @@ func TestParseIP(t *testing.T) {
 func TestParseSegments(t *testing.T) {
 	tests := []struct {
 		name      string
-		input     string
+		input     []string
 		wantIPs   []net.IP
 		wantError bool
 	}{
 		{
 			"ValidSingleSegment",
-			"2607:ed40:ff00::1",
+			[]string{"2607:ed40:ff00::1"},
 			[]net.IP{net.ParseIP("2607:ed40:ff00::1")},
 			false,
 		},
 		{
 			"ValidMultipleSegments",
-			"2607:ed40:ff00::1, 2607:ed40:ff01::1",
+			[]string{"2607:ed40:ff00::1", "2607:ed40:ff01::1"},
 			[]net.IP{net.ParseIP("2607:ed40:ff01::1"), net.ParseIP("2607:ed40:ff00::1")},
 			false,
 		},
 		{
 			"InvalidSegment",
-			"2607:ed40:ff00::1, invalid_ip",
+			[]string{"2607:ed40:ff00::1", "invalid_ip"},
 			nil,
 			true,
 		},
 		{
 			"InvalidIPv4Segment",
-			"2607:ed40:ff00::1, 192.168.0.1",
+			[]string{"2607:ed40:ff00::1", "192.168.0.1"},
 			nil,
 			true,
 		},
 		{
 			"EmptyInput",
-			"",
+			[]string{},
 			nil,
 			true,
 		},
