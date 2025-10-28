@@ -6,6 +6,9 @@ import (
 	"math/big"
 	"net"
 	"strconv"
+	"strings"
+
+	"github.com/kenshaw/baseconv"
 )
 
 const InterfaceNameTemplate = "G%09s%03s%s"
@@ -96,4 +99,12 @@ func IsHost(ipNet *net.IPNet) bool {
 	ones, bits := ipNet.Mask.Size()
 	// host if mask is full length: /32 for IPv4, /128 for IPv6
 	return ones == bits
+}
+
+func HexToBase62(value string) (string, error) {
+	return baseconv.Convert(strings.ToLower(value), baseconv.DigitsHex, baseconv.Digits62)
+}
+
+func Base62ToHex(value string) (string, error) {
+	return baseconv.Convert(value, baseconv.Digits62, baseconv.DigitsHex)
 }
