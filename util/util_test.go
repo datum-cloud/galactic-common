@@ -8,6 +8,36 @@ import (
 	"github.com/datum-cloud/galactic-common/util"
 )
 
+func TestGenerateInterfaceNameVRF(t *testing.T) {
+	vpc := "0000000jU"     // 1234 dec
+	vpcattachment := "00G" // 42 dec
+	expected := "G0000000jU00GV"
+	got := util.GenerateInterfaceNameVRF(vpc, vpcattachment)
+	if got != expected {
+		t.Errorf("GenerateInterfaceNameVRF(%s, %s) = %s, want %s", vpc, vpcattachment, got, expected)
+	}
+}
+
+func TestGenerateInterfaceNameHost(t *testing.T) {
+	vpc := "0000000jU"     // 1234 dec
+	vpcattachment := "00G" // 42 dec
+	expected := "G0000000jU00GH"
+	got := util.GenerateInterfaceNameHost(vpc, vpcattachment)
+	if got != expected {
+		t.Errorf("GenerateInterfaceNameHost(%s, %s) = %s, want %s", vpc, vpcattachment, got, expected)
+	}
+}
+
+func TestGenerateInterfaceNameGuest(t *testing.T) {
+	vpc := "0000000jU"     // 1234 dec
+	vpcattachment := "00G" // 42 dec
+	expected := "G0000000jU00GG"
+	got := util.GenerateInterfaceNameGuest(vpc, vpcattachment)
+	if got != expected {
+		t.Errorf("GenerateInterfaceNameGuest(%s, %s) = %s, want %s", vpc, vpcattachment, got, expected)
+	}
+}
+
 func TestParseIP(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -82,36 +112,6 @@ func TestParseSegments(t *testing.T) {
 				t.Errorf("ParseSegments() got = %v, want = %v", got, tt.wantIPs)
 			}
 		})
-	}
-}
-
-func TestGenerateInterfaceNameVRF(t *testing.T) {
-	vpc := "0000000jU"     // 1234 dec
-	vpcattachment := "00G" // 42 dec
-	expected := "G0000000jU00GV"
-	got := util.GenerateInterfaceNameVRF(vpc, vpcattachment)
-	if got != expected {
-		t.Errorf("GenerateInterfaceNameVRF(%s, %s) = %s, want %s", vpc, vpcattachment, got, expected)
-	}
-}
-
-func TestGenerateInterfaceNameHost(t *testing.T) {
-	vpc := "0000000jU"     // 1234 dec
-	vpcattachment := "00G" // 42 dec
-	expected := "G0000000jU00GH"
-	got := util.GenerateInterfaceNameHost(vpc, vpcattachment)
-	if got != expected {
-		t.Errorf("GenerateInterfaceNameHost(%s, %s) = %s, want %s", vpc, vpcattachment, got, expected)
-	}
-}
-
-func TestGenerateInterfaceNameGuest(t *testing.T) {
-	vpc := "0000000jU"     // 1234 dec
-	vpcattachment := "00G" // 42 dec
-	expected := "G0000000jU00GG"
-	got := util.GenerateInterfaceNameGuest(vpc, vpcattachment)
-	if got != expected {
-		t.Errorf("GenerateInterfaceNameGuest(%s, %s) = %s, want %s", vpc, vpcattachment, got, expected)
 	}
 }
 
