@@ -13,6 +13,18 @@ import (
 
 const InterfaceNameTemplate = "G%09s%03s%s"
 
+func GenerateInterfaceNameVRF(vpc, vpcAttachment string) string {
+	return fmt.Sprintf(InterfaceNameTemplate, vpc, vpcAttachment, "V")
+}
+
+func GenerateInterfaceNameHost(vpc, vpcAttachment string) string {
+	return fmt.Sprintf(InterfaceNameTemplate, vpc, vpcAttachment, "H")
+}
+
+func GenerateInterfaceNameGuest(vpc, vpcAttachment string) string {
+	return fmt.Sprintf(InterfaceNameTemplate, vpc, vpcAttachment, "G")
+}
+
 func ParseIP(ip string) (net.IP, error) {
 	parsed := net.ParseIP(ip)
 	if parsed == nil {
@@ -39,16 +51,10 @@ func ParseSegments(input []string) ([]net.IP, error) {
 	return segments, nil
 }
 
-func GenerateInterfaceNameVRF(vpc, vpcAttachment string) string {
-	return fmt.Sprintf(InterfaceNameTemplate, vpc, vpcAttachment, "V")
-}
-
-func GenerateInterfaceNameHost(vpc, vpcAttachment string) string {
-	return fmt.Sprintf(InterfaceNameTemplate, vpc, vpcAttachment, "H")
-}
-
-func GenerateInterfaceNameGuest(vpc, vpcAttachment string) string {
-	return fmt.Sprintf(InterfaceNameTemplate, vpc, vpcAttachment, "G")
+func IsHost(ipNet *net.IPNet) bool {
+	ones, bits := ipNet.Mask.Size()
+	// host if mask is full length: /32 for IPv4, /128 for IPv6
+	return ones == bits
 }
 
 func DecodeSRv6Endpoint(endpoint net.IP) (string, string, error) {
@@ -93,12 +99,6 @@ func EncodeSRv6Endpoint(srv6_net, vpc, vpcAttachment string) (string, error) {
 
 	binary.BigEndian.PutUint64(ip[8:16], (vpcInt<<16)|vpcAttachmentInt)
 	return ip.String(), nil
-}
-
-func IsHost(ipNet *net.IPNet) bool {
-	ones, bits := ipNet.Mask.Size()
-	// host if mask is full length: /32 for IPv4, /128 for IPv6
-	return ones == bits
 }
 
 func HexToBase62(value string) (string, error) {
